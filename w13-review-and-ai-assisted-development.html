@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Week 13 — Review & AI-Assisted Development</title>
+<meta name="author" content="Rui Maranhão">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<style>
+:root{
+  --ink:#15181d; --ink-2:#414a58; --ink-3:#78828f;
+  --bg:#fbfaf8; --panel:#ffffff; --rule:#e2ded6;
+  --accent:#a4161a; --accent-2:#1d4e89; --ok:#1b6e46;
+  --code-bg:#1c2027; --code-fg:#e8e6e3;
+  --sans:"Helvetica Neue",Helvetica,Arial,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+}
+html,body{background:var(--bg);}
+.reveal{font-family:var(--sans); color:var(--ink); font-weight:400; font-size:40px;}
+.reveal .slides{text-align:left;}
+.reveal .slides section{padding:0 2.2rem; line-height:1.35; box-sizing:border-box;}
+.reveal h1,.reveal h2,.reveal h3,.reveal h4{
+  font-family:var(--sans); color:var(--ink); font-weight:700;
+  letter-spacing:-.02em; text-transform:none; margin:0 0 .5em;
+}
+.reveal h1{font-size:2.5em; line-height:1.05;}
+.reveal h2{font-size:1.9em; line-height:1.12;}
+.reveal h3{font-size:1.2em; line-height:1.2;}
+.reveal h4{font-size:.66em; color:var(--ink-2); font-weight:700;
+  text-transform:uppercase; letter-spacing:.09em; margin-bottom:.7em;}
+.reveal p{margin:0 0 .6em;}
+.reveal a{color:var(--accent-2); text-decoration:none; border-bottom:1px solid #c9d6e6;}
+.reveal em{font-style:italic; color:var(--ink);}
+.reveal strong{font-weight:700;}
+
+.kicker{font-size:.46em!important; text-transform:uppercase; letter-spacing:.14em;
+  color:var(--accent); font-weight:700; margin:0 0 1.1em!important;}
+.sub{font-size:.58em!important; color:var(--ink-2); max-width:22em; margin-top:.9em!important;}
+.cap{font-size:.46em!important; color:var(--ink-3); margin-top:.9em!important;}
+
+/* one-idea slides -- scoped so the fallback engine can still hide them */
+.reveal .slides > section.s-big,
+.reveal .slides > section.s-q,
+.reveal .slides > section.s-part,
+.reveal .slides > section.s-quote,
+.reveal .slides > section.s-title{
+  display:flex; flex-direction:column; justify-content:center;}
+.s-big h2{font-size:2.3em; max-width:15em;}
+.s-q h2{font-size:2.1em; max-width:15em; color:var(--accent-2);}
+.s-q h2::after{content:""; display:block; width:2.4em; height:3px;
+  background:var(--accent); margin-top:.5em;}
+.s-part h2{font-size:2.4em;}
+
+/* lists */
+.reveal .s-list ul,.reveal .s-take ul,.reveal .s-lab ol{
+  display:block; margin:0; font-size:.72em;}
+.reveal .s-list li,.reveal .s-take li,.reveal .s-lab li{margin:0 0 .62em; line-height:1.4;}
+.reveal .s-list.tight li{margin-bottom:.34em;}
+.reveal .s-list li ul{font-size:.86em; margin-top:.35em; color:var(--ink-2);}
+.reveal .s-lab{border-left:5px solid var(--accent-2); }
+.reveal .s-take{border-left:5px solid var(--ok);}
+.reveal .s-take li::marker{color:var(--ok);}
+
+/* code */
+.reveal pre{width:100%; box-shadow:none; margin:.3em 0; font-size:.48em;}
+.reveal pre code{
+  background:var(--code-bg); color:var(--code-fg); font-family:var(--mono);
+  padding:1em 1.1em; border-radius:8px; max-height:none; line-height:1.5;
+  overflow:auto; display:block; tab-size:2; font-weight:400;}
+.reveal code:not(pre code){
+  font-family:var(--mono); font-size:.86em; background:#efece6;
+  padding:.08em .3em; border-radius:4px; color:var(--ink);}
+
+/* two columns */
+.cols{display:flex; gap:1.6rem; align-items:flex-start;}
+.col{flex:1 1 0; min-width:0;}
+.reveal .col ul{font-size:.66em; display:block;}
+.reveal .col li{margin-bottom:.5em;}
+.reveal .col pre{font-size:.42em;}
+.reveal .col p{font-size:.66em; color:var(--ink-2);}
+
+/* tables */
+.tw{overflow-x:auto;}
+.reveal table{font-size:.58em; border-collapse:collapse; width:100%;}
+.reveal table th{
+  text-align:left; border-bottom:2px solid var(--ink); padding:.45em .6em;
+  font-weight:700; font-size:.9em; text-transform:uppercase; letter-spacing:.06em;}
+.reveal table td{border-bottom:1px solid var(--rule); padding:.45em .6em;
+  vertical-align:top;}
+.reveal table tr:last-child td{border-bottom:none;}
+
+.reveal .s-table.dense table{font-size:.46em;}
+.reveal .s-table.dense table td,.reveal .s-table.dense table th{padding:.3em .55em;}
+
+/* figures */
+.fig{display:flex; justify-content:center; align-items:center; margin:.2em 0;}
+.fig svg{max-width:100%; height:auto; max-height:62vh;}
+
+/* quote */
+.reveal blockquote{
+  background:none; box-shadow:none; width:100%; font-size:1.05em; font-style:normal;
+  border-left:5px solid var(--accent); padding:.1em 0 .1em .9em; margin:0; line-height:1.3;}
+.who{font-size:.54em!important; color:var(--ink-3); margin-top:1em!important;
+  text-transform:uppercase; letter-spacing:.1em;}
+
+/* title slide */
+.s-title .wk{font-size:.44em!important; text-transform:uppercase; letter-spacing:.16em;
+  color:var(--accent); font-weight:700; margin:0 0 .8em!important;}
+.s-title h1{margin-bottom:.25em;}
+.s-title .tag{font-size:.55em!important; color:var(--ink-2); max-width:24em;}
+.s-title .meta{font-size:.42em!important; color:var(--ink-3); margin-top:2em!important;
+  border-top:1px solid var(--rule); padding-top:.9em;}
+
+/* chrome */
+.deck-chrome{position:fixed; bottom:14px; left:20px; right:20px; z-index:30;
+  display:flex; justify-content:space-between; font:600 11px/1 var(--sans);
+  color:var(--ink-3); letter-spacing:.08em; text-transform:uppercase;
+  pointer-events:none;}
+.reveal .progress{color:var(--accent); height:3px;}
+.reveal .controls{color:var(--ink-3);}
+
+/* ---------- fallback engine (no reveal.js) ---------- */
+html.no-reveal body{margin:0;}
+html.no-reveal .reveal .slides{position:static;}
+html.no-reveal .reveal .slides > section{
+  display:none; position:relative; width:100%;
+  min-height:100vh; box-sizing:border-box;
+  padding:6vh 7vw 12vh; font-size:calc(13px + 1.9vw);}
+html.no-reveal .reveal .slides > section.fb-on{display:block;}
+html.no-reveal .reveal .slides > section.fb-on.s-big,
+html.no-reveal .reveal .slides > section.fb-on.s-q,
+html.no-reveal .reveal .slides > section.fb-on.s-part,
+html.no-reveal .reveal .slides > section.fb-on.s-quote,
+html.no-reveal .reveal .slides > section.fb-on.s-title{
+  display:flex; flex-direction:column; justify-content:center;}
+html.no-reveal .notes{display:none;}
+html.no-reveal.fb-notes .notes{
+  display:block; margin-top:2em; padding:.9em 1.1em; background:#f2efe9;
+  border-left:4px solid var(--ink-3); font-size:.5em; color:var(--ink-2);
+  border-radius:0 6px 6px 0;}
+html.no-reveal.fb-all .reveal .slides > section{
+  display:block; min-height:0; border-bottom:1px solid var(--rule);
+  page-break-after:always; break-after:page;}
+.fb-bar{position:fixed; bottom:0; left:0; right:0; height:4px;
+  background:var(--rule); z-index:40; display:none;}
+html.no-reveal .fb-bar{display:block;}
+.fb-bar i{display:block; height:100%; background:var(--accent); width:0;}
+@media print{
+  .deck-chrome,.fb-bar{display:none!important;}
+  html.no-reveal .reveal .slides > section{display:block!important;}
+}
+</style>
+</head>
+<body>
+<div class="reveal"><div class="slides">
+<section class="s-title"><p class="wk">Week 13</p><h1>Review &amp; AI-Assisted Development</h1><p class="tag">The skill that transfers, and where the degree goes next.</p><p class="meta">Rui Maranhão &middot; LDTS · L.EIC014 · FEUP &middot; 2026/2027</p></section><section class="s-part"><p class="kicker">Practice</p><h2>Review, assistants, and what comes next</h2></section>
+<section class="s-part"><p class="kicker">One</p><h2>Code review</h2></section>
+<section class="s-q"><h2>Your teammate opens a pull request with 400 changed lines. What do you do?</h2></section>
+<section class="s-big"><h2>Send it back.</h2><p class="sub">A review of 400 lines finds style errors. A review of 40 finds bugs.</p></section>
+<section class="s-list"><h3>What a reviewer is actually for</h3><ul><li>Finding defects &mdash; the original purpose, and still the cheapest place to find them</li><li>Spreading knowledge &mdash; two people now understand that code</li><li>Keeping the design coherent &mdash; the only checkpoint before it is merged</li><li>Not: checking formatting. A tool does that.</li></ul></section>
+<section class="s-list"><h3>How to review</h3><ul><li>Read the description first. If there is none, that is the first comment.</li><li>Understand the <em>intent</em> before judging the implementation</li><li>Ask questions rather than issuing verdicts: &ldquo;what happens if this is empty?&rdquo;</li><li>Distinguish blocking problems from preferences, and say which is which</li><li>Approve when it is better than what is on <code>main</code> &mdash; not when it is perfect</li></ul></section>
+<section class="s-two"><h3>Two comments</h3><div class="cols"><div class="col"><h4>Unhelpful</h4>
+<pre><code class="language-text">this is wrong
+
+why did you do it like this?
+
+nit: nit: nit: nit: nit:</code></pre></div><div class="col"><h4>Helpful</h4>
+<pre><code class="language-text">Blocking: if elements is empty this
+throws. Test with an empty arena?
+
+Suggestion (non-blocking): this reads
+like Feature Envy - could damage()
+live on Monster?</code></pre></div></div></section>
+<section class="s-list"><h3>Receiving a review</h3><ul><li>The code is being reviewed, not you</li><li>Every comment gets a response &mdash; changed, or explained</li><li>&ldquo;Good catch&rdquo; is a complete and sufficient reply</li><li>If you disagree, say why. A reviewer can be wrong.</li></ul></section>
+<section class="s-part"><p class="kicker">Two</p><h2>AI assistants</h2></section>
+<section class="s-q"><h2>You have all used one this semester. Let us talk about it properly.</h2></section>
+<section class="s-big"><h2>The generation problem is largely solved.</h2><p class="sub">The verification problem is entirely yours.</p></section>
+<section class="s-list"><h3>What assistants are genuinely good at</h3><ul><li>Boilerplate: builders, <code>equals</code>, adapters, test scaffolding</li><li>Explaining unfamiliar APIs and error messages</li><li>First-draft tests for a method you already designed</li><li>Suggesting the name of a pattern you have half-described</li></ul></section>
+<section class="s-list"><h3>Where they reliably fail</h3><ul><li>Design decisions that depend on <em>your</em> constraints</li><li>Tests that assert something meaningful rather than something true</li><li>Knowing that a pattern is unnecessary here</li><li>Being wrong confidently, in code that compiles and passes</li></ul></section>
+<section class="s-code"><h3>Generated, plausible, worthless</h3><pre><code class="language-java" data-trim data-noescape>@Test
+void testMoveHero() {
+    Arena arena = new Arena(10, 10);
+    arena.moveHero(Direction.UP);
+    assertNotNull(arena.getHero());     // true before the call, too
+}</code></pre><p class="cap">Compiles. Passes. Adds coverage. Kills no mutants. This is the failure mode to recognise.</p></section>
+<section class="s-list"><h3>The habit to build</h3><ul><li>Never accept code you could not have written</li><li>Ask it for the test, then check the test would fail against broken code</li><li>Run mutation testing on generated tests &mdash; it exposes them immediately</li><li>Treat every suggestion as a pull request from a fast, confident, junior colleague</li></ul></section>
+<section class="s-big"><h2>Review is the skill that transfers.</h2><p class="sub">It was valuable before assistants. It is now the whole job.</p></section>
+<section class="s-list"><h3>For the report and the defence</h3><ul><li>Declare where you used assistance and for what</li><li>You own every line, including the ones you did not type</li><li>At the defence you will be asked to explain a class you did not write by hand. Read your own code first.</li><li>This is not a trap. It is what code review is in any team you will join.</li></ul></section>
+<section class="s-part"><p class="kicker">Three</p><h2>Closing</h2></section>
+<section class="s-table"><h3>What you learned, by verb</h3><div class="tw"><table><thead><tr><th></th><th>Week</th><th>Now you can</th></tr></thead><tbody><tr><td>Design</td><td>6&ndash;9</td><td>Justify a structure, name the pattern, defend the trade-off</td></tr><tr><td>Test</td><td>3&ndash;5, 11</td><td>Write tests that would fail if the code were wrong</td></tr><tr><td>Refactor</td><td>10, 12</td><td>Change structure without changing behaviour</td></tr><tr><td>Collaborate</td><td>1, 13</td><td>Work through branches, pull requests and review</td></tr></tbody></table></div></section>
+<section class="s-q"><h2>What is the one thing to keep from this course?</h2></section>
+<section class="s-big"><h2>Code is read far more often than it is written,</h2><p class="sub">and changed far more often than it is read.</p></section>
+<section class="s-list"><h3>Where this goes next in L.EIC</h3><ul><li><strong>ESOF</strong> &mdash; process, requirements, teams at scale</li><li><strong>LPOO / LBAW</strong> &mdash; the same design ideas in other domains</li><li>Everything you build for the rest of the degree</li></ul></section>
+<section class="s-list"><h3>If you want to go further</h3><ul><li>Freeman &amp; Pryce, <em>Growing Object-Oriented Software, Guided by Tests</em></li><li>Fowler, <em>Refactoring</em> (2nd ed.) &mdash; work through the catalogue</li><li>Ousterhout, <em>A Philosophy of Software Design</em> &mdash; short, and disagrees with Fowler in useful ways</li><li>Read a real codebase. Pick one you use and read its tests first.</li></ul></section>
+<section class="s-big"><h2>Final delivery and defences follow.</h2><p class="sub">Bring your commit history. Thank you &mdash; it was a good semester.</p></section>
+<section class="s-take"><p class="kicker">Take away</p><ul><li>Small pull requests get real reviews</li><li>Assistants generate; you verify. The second half is the job.</li><li>A test that cannot fail is not a test</li><li>Design is judged by the cost of the next change</li></ul></section>
+</div></div>
+<div class="deck-chrome"><span>LDTS · L.EIC014 · FEUP</span><span id="deck-pos">Week 13</span></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/notes/notes.min.js"></script>
+<script>
+(function(){
+  // Progressive enhancement: use reveal.js when it loads, otherwise a tiny
+  // built-in presenter so the deck still works with no network in the room.
+  function boot(){
+    if (window.Reveal) {
+      Reveal.initialize({
+        hash:true, slideNumber:'c/t', controls:true, progress:true,
+        transition:'none', backgroundTransition:'none',
+        width:1280, height:800, margin:0.06,
+        minScale:0.2, maxScale:1.6,
+        plugins:[window.RevealHighlight, window.RevealNotes].filter(Boolean)
+      });
+      return;
+    }
+    var root=document.documentElement;
+    root.classList.add('no-reveal');
+    var slides=[].slice.call(document.querySelectorAll('.reveal .slides > section'));
+    if(!slides.length) return;
+    var bar=document.createElement('div');
+    bar.className='fb-bar'; bar.innerHTML='<i></i>';
+    document.body.appendChild(bar);
+    var fill=bar.firstChild, i=0;
+    function show(n){
+      i=Math.max(0,Math.min(slides.length-1,n));
+      slides.forEach(function(s,k){ s.classList.toggle('fb-on',k===i); });
+      fill.style.width=((i+1)/slides.length*100)+'%';
+      var c=document.getElementById('deck-pos');
+      if(c) c.textContent=(i+1)+' / '+slides.length;
+      try{ history.replaceState(null,'','#/'+i); }catch(e){}
+      window.scrollTo(0,0);
+    }
+    var m=/^#\/(\d+)/.exec(location.hash||'');
+    document.addEventListener('keydown',function(e){
+      if(e.metaKey||e.ctrlKey||e.altKey) return;
+      var k=e.key;
+      if(k==='ArrowRight'||k==='ArrowDown'||k===' '||k==='PageDown'){show(i+1);e.preventDefault();}
+      else if(k==='ArrowLeft'||k==='ArrowUp'||k==='PageUp'){show(i-1);e.preventDefault();}
+      else if(k==='Home'){show(0);e.preventDefault();}
+      else if(k==='End'){show(slides.length-1);e.preventDefault();}
+      else if(k==='n'||k==='s'){root.classList.toggle('fb-notes');}
+      else if(k==='a'){root.classList.toggle('fb-all');}
+      else if(k==='f'){ if(document.fullscreenElement) document.exitFullscreen();
+                        else document.documentElement.requestFullscreen(); }
+    });
+    document.addEventListener('click',function(e){
+      if(e.target.closest('a')) return;
+      show(i + (e.clientX > window.innerWidth*0.35 ? 1 : -1));
+    });
+    show(m?parseInt(m[1],10):0);
+  }
+  if(document.readyState==='loading')
+    window.addEventListener('DOMContentLoaded',function(){setTimeout(boot,60);});
+  else setTimeout(boot,60);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Week 06 — SOLID</title>
+<meta name="author" content="Rui Maranhão">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<style>
+:root{
+  --ink:#15181d; --ink-2:#414a58; --ink-3:#78828f;
+  --bg:#fbfaf8; --panel:#ffffff; --rule:#e2ded6;
+  --accent:#a4161a; --accent-2:#1d4e89; --ok:#1b6e46;
+  --code-bg:#1c2027; --code-fg:#e8e6e3;
+  --sans:"Helvetica Neue",Helvetica,Arial,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+}
+html,body{background:var(--bg);}
+.reveal{font-family:var(--sans); color:var(--ink); font-weight:400; font-size:40px;}
+.reveal .slides{text-align:left;}
+.reveal .slides section{padding:0 2.2rem; line-height:1.35; box-sizing:border-box;}
+.reveal h1,.reveal h2,.reveal h3,.reveal h4{
+  font-family:var(--sans); color:var(--ink); font-weight:700;
+  letter-spacing:-.02em; text-transform:none; margin:0 0 .5em;
+}
+.reveal h1{font-size:2.5em; line-height:1.05;}
+.reveal h2{font-size:1.9em; line-height:1.12;}
+.reveal h3{font-size:1.2em; line-height:1.2;}
+.reveal h4{font-size:.66em; color:var(--ink-2); font-weight:700;
+  text-transform:uppercase; letter-spacing:.09em; margin-bottom:.7em;}
+.reveal p{margin:0 0 .6em;}
+.reveal a{color:var(--accent-2); text-decoration:none; border-bottom:1px solid #c9d6e6;}
+.reveal em{font-style:italic; color:var(--ink);}
+.reveal strong{font-weight:700;}
+
+.kicker{font-size:.46em!important; text-transform:uppercase; letter-spacing:.14em;
+  color:var(--accent); font-weight:700; margin:0 0 1.1em!important;}
+.sub{font-size:.58em!important; color:var(--ink-2); max-width:22em; margin-top:.9em!important;}
+.cap{font-size:.46em!important; color:var(--ink-3); margin-top:.9em!important;}
+
+/* one-idea slides -- scoped so the fallback engine can still hide them */
+.reveal .slides > section.s-big,
+.reveal .slides > section.s-q,
+.reveal .slides > section.s-part,
+.reveal .slides > section.s-quote,
+.reveal .slides > section.s-title{
+  display:flex; flex-direction:column; justify-content:center;}
+.s-big h2{font-size:2.3em; max-width:15em;}
+.s-q h2{font-size:2.1em; max-width:15em; color:var(--accent-2);}
+.s-q h2::after{content:""; display:block; width:2.4em; height:3px;
+  background:var(--accent); margin-top:.5em;}
+.s-part h2{font-size:2.4em;}
+
+/* lists */
+.reveal .s-list ul,.reveal .s-take ul,.reveal .s-lab ol{
+  display:block; margin:0; font-size:.72em;}
+.reveal .s-list li,.reveal .s-take li,.reveal .s-lab li{margin:0 0 .62em; line-height:1.4;}
+.reveal .s-list.tight li{margin-bottom:.34em;}
+.reveal .s-list li ul{font-size:.86em; margin-top:.35em; color:var(--ink-2);}
+.reveal .s-lab{border-left:5px solid var(--accent-2); }
+.reveal .s-take{border-left:5px solid var(--ok);}
+.reveal .s-take li::marker{color:var(--ok);}
+
+/* code */
+.reveal pre{width:100%; box-shadow:none; margin:.3em 0; font-size:.48em;}
+.reveal pre code{
+  background:var(--code-bg); color:var(--code-fg); font-family:var(--mono);
+  padding:1em 1.1em; border-radius:8px; max-height:none; line-height:1.5;
+  overflow:auto; display:block; tab-size:2; font-weight:400;}
+.reveal code:not(pre code){
+  font-family:var(--mono); font-size:.86em; background:#efece6;
+  padding:.08em .3em; border-radius:4px; color:var(--ink);}
+
+/* two columns */
+.cols{display:flex; gap:1.6rem; align-items:flex-start;}
+.col{flex:1 1 0; min-width:0;}
+.reveal .col ul{font-size:.66em; display:block;}
+.reveal .col li{margin-bottom:.5em;}
+.reveal .col pre{font-size:.42em;}
+.reveal .col p{font-size:.66em; color:var(--ink-2);}
+
+/* tables */
+.tw{overflow-x:auto;}
+.reveal table{font-size:.58em; border-collapse:collapse; width:100%;}
+.reveal table th{
+  text-align:left; border-bottom:2px solid var(--ink); padding:.45em .6em;
+  font-weight:700; font-size:.9em; text-transform:uppercase; letter-spacing:.06em;}
+.reveal table td{border-bottom:1px solid var(--rule); padding:.45em .6em;
+  vertical-align:top;}
+.reveal table tr:last-child td{border-bottom:none;}
+
+.reveal .s-table.dense table{font-size:.46em;}
+.reveal .s-table.dense table td,.reveal .s-table.dense table th{padding:.3em .55em;}
+
+/* figures */
+.fig{display:flex; justify-content:center; align-items:center; margin:.2em 0;}
+.fig svg{max-width:100%; height:auto; max-height:62vh;}
+
+/* quote */
+.reveal blockquote{
+  background:none; box-shadow:none; width:100%; font-size:1.05em; font-style:normal;
+  border-left:5px solid var(--accent); padding:.1em 0 .1em .9em; margin:0; line-height:1.3;}
+.who{font-size:.54em!important; color:var(--ink-3); margin-top:1em!important;
+  text-transform:uppercase; letter-spacing:.1em;}
+
+/* title slide */
+.s-title .wk{font-size:.44em!important; text-transform:uppercase; letter-spacing:.16em;
+  color:var(--accent); font-weight:700; margin:0 0 .8em!important;}
+.s-title h1{margin-bottom:.25em;}
+.s-title .tag{font-size:.55em!important; color:var(--ink-2); max-width:24em;}
+.s-title .meta{font-size:.42em!important; color:var(--ink-3); margin-top:2em!important;
+  border-top:1px solid var(--rule); padding-top:.9em;}
+
+/* chrome */
+.deck-chrome{position:fixed; bottom:14px; left:20px; right:20px; z-index:30;
+  display:flex; justify-content:space-between; font:600 11px/1 var(--sans);
+  color:var(--ink-3); letter-spacing:.08em; text-transform:uppercase;
+  pointer-events:none;}
+.reveal .progress{color:var(--accent); height:3px;}
+.reveal .controls{color:var(--ink-3);}
+
+/* ---------- fallback engine (no reveal.js) ---------- */
+html.no-reveal body{margin:0;}
+html.no-reveal .reveal .slides{position:static;}
+html.no-reveal .reveal .slides > section{
+  display:none; position:relative; width:100%;
+  min-height:100vh; box-sizing:border-box;
+  padding:6vh 7vw 12vh; font-size:calc(13px + 1.9vw);}
+html.no-reveal .reveal .slides > section.fb-on{display:block;}
+html.no-reveal .reveal .slides > section.fb-on.s-big,
+html.no-reveal .reveal .slides > section.fb-on.s-q,
+html.no-reveal .reveal .slides > section.fb-on.s-part,
+html.no-reveal .reveal .slides > section.fb-on.s-quote,
+html.no-reveal .reveal .slides > section.fb-on.s-title{
+  display:flex; flex-direction:column; justify-content:center;}
+html.no-reveal .notes{display:none;}
+html.no-reveal.fb-notes .notes{
+  display:block; margin-top:2em; padding:.9em 1.1em; background:#f2efe9;
+  border-left:4px solid var(--ink-3); font-size:.5em; color:var(--ink-2);
+  border-radius:0 6px 6px 0;}
+html.no-reveal.fb-all .reveal .slides > section{
+  display:block; min-height:0; border-bottom:1px solid var(--rule);
+  page-break-after:always; break-after:page;}
+.fb-bar{position:fixed; bottom:0; left:0; right:0; height:4px;
+  background:var(--rule); z-index:40; display:none;}
+html.no-reveal .fb-bar{display:block;}
+.fb-bar i{display:block; height:100%; background:var(--accent); width:0;}
+@media print{
+  .deck-chrome,.fb-bar{display:none!important;}
+  html.no-reveal .reveal .slides > section{display:block!important;}
+}
+</style>
+</head>
+<body>
+<div class="reveal"><div class="slides">
+<section class="s-title"><p class="wk">Week 06</p><h1>SOLID</h1><p class="tag">Five heuristics against rigidity, fragility, immobility and viscosity.</p><p class="meta">Rui Maranhão &middot; LDTS · L.EIC014 · FEUP &middot; 2026/2027</p></section><section class="s-part"><p class="kicker">Design</p><h2>Five principles</h2></section>
+<section class="s-q"><h2>Your code works. Why would anyone want to change how it is arranged?</h2></section>
+<section class="s-big"><h2>Because the next requirement is already on its way.</h2></section>
+<section class="s-quote"><blockquote>A design is rigid when a single change forces a cascade of changes in dependent modules.</blockquote><p class="who">Robert C. Martin</p></section>
+<section class="s-list"><h3>Four symptoms of rot</h3><ul><li><strong>Rigidity</strong> &mdash; a small change forces many others</li><li><strong>Fragility</strong> &mdash; a change breaks something unrelated</li><li><strong>Immobility</strong> &mdash; you cannot reuse a part without dragging the whole</li><li><strong>Viscosity</strong> &mdash; the wrong thing is easier to do than the right one</li></ul></section>
+<section class="s-big"><h2>S O L I D</h2><p class="sub">Five heuristics that push back on all four.</p></section>
+<section class="s-part"><p class="kicker">S</p><h2>Single Responsibility</h2></section>
+<section class="s-big"><h2>A class should have one reason to change.</h2></section>
+<section class="s-code"><h3>Two reasons to change</h3><pre><code class="language-java" data-trim data-noescape>class Hero {
+    private Position position;
+
+    public void move(Direction d) { ... }          // game rules
+
+    public void draw(TextGraphics g) {             // presentation
+        g.setForegroundColor(TextColor.ANSI.RED);
+        g.putString(position.x(), position.y(), &quot;H&quot;);
+    }
+
+    public void saveToFile(Path path) { ... }      // persistence
+}</code></pre><p class="cap">Change the colour scheme &rarr; recompile the game rules. Three responsibilities, one class.</p></section>
+<section class="s-code"><h3>Split by reason to change</h3><pre><code class="language-java" data-trim data-noescape>record Hero(Position position) {
+    Hero move(Direction d) { return new Hero(position.translate(d)); }
+}
+
+class HeroViewer implements ElementViewer&lt;Hero&gt; {
+    public void draw(Hero hero, GUI gui) { gui.drawHero(hero.position()); }
+}
+
+class HeroRepository { void save(Hero hero, Path path) { ... } }</code></pre></section>
+<section class="s-q"><h2>&ldquo;One responsibility&rdquo; sounds subjective. Is it?</h2></section>
+<section class="s-big"><h2>Ask who asks for the change.</h2><p class="sub">Game designer, artist, ops engineer &mdash; three people, three classes.</p></section>
+<section class="s-part"><p class="kicker">O</p><h2>Open/Closed</h2></section>
+<section class="s-big"><h2>Open for extension. Closed for modification.</h2><p class="sub">New behaviour should mean new code, not edited code.</p></section>
+<section class="s-code"><h3>Closed for extension</h3><pre><code class="language-java" data-trim data-noescape>class Monster {
+    void act(Arena arena) {
+        if (type == Type.CHASER)      chase(arena);
+        else if (type == Type.RANDOM) wander(arena);
+        else if (type == Type.SLEEPER) { }
+        // a fourth monster means editing this method again
+    }
+}</code></pre></section>
+<section class="s-code"><h3>Open for extension</h3><pre><code class="language-java" data-trim data-noescape>interface Monster { Position nextPosition(Arena arena); }
+
+class Chaser  implements Monster { ... }
+class Wanderer implements Monster { ... }
+class Sleeper implements Monster { ... }
+
+// a fourth monster is a new file; nothing existing is touched</code></pre><p class="cap">This is the Strategy pattern, arrived at from a principle rather than a catalogue.</p></section>
+<section class="s-part"><p class="kicker">L</p><h2>Liskov Substitution</h2></section>
+<section class="s-big"><h2>A subtype must be usable wherever its supertype is,</h2><p class="sub">without the caller knowing.</p></section>
+<section class="s-code"><h3>The classic violation</h3><pre><code class="language-java" data-trim data-noescape>class Rectangle {
+    void setWidth(int w)  { this.width = w; }
+    void setHeight(int h) { this.height = h; }
+    int area() { return width * height; }
+}
+
+class Square extends Rectangle {
+    void setWidth(int w)  { this.width = w; this.height = w; }
+    void setHeight(int h) { this.width = h; this.height = h; }
+}
+
+// caller: r.setWidth(5); r.setHeight(4); assertEquals(20, r.area());
+// passes for Rectangle, fails for Square</code></pre><p class="cap">A square <em>is a</em> rectangle in geometry. It is not a subtype in code.</p></section>
+<section class="s-list"><h3>What subclasses must not do</h3><ul><li>Strengthen preconditions &mdash; demand more than the parent</li><li>Weaken postconditions &mdash; promise less than the parent</li><li>Throw new exception types the caller cannot expect</li><li>Silently do nothing where the parent did something</li></ul></section>
+<section class="s-big"><h2>If you find yourself writing <code>if (x instanceof Y)</code>,</h2><p class="sub">you have probably broken this one already.</p></section>
+<section class="s-part"><p class="kicker">I</p><h2>Interface Segregation</h2></section>
+<section class="s-big"><h2>No client should depend on methods it does not use.</h2></section>
+<section class="s-code"><h3>A fat interface</h3><pre><code class="language-java" data-trim data-noescape>interface GameElement {
+    void draw(GUI gui);
+    void update(Arena arena);
+    void onCollision(GameElement other);
+    void playSound();
+    void save(Path path);
+}
+
+// Wall implements five methods. Four of them are empty.</code></pre></section>
+<section class="s-code"><h3>Segregated</h3><pre><code class="language-java" data-trim data-noescape>interface Drawable  { void draw(GUI gui); }
+interface Updatable { void update(Arena arena); }
+interface Collidable { void onCollision(GameElement other); }
+
+class Wall   implements Drawable, Collidable { ... }
+class Hero   implements Drawable, Updatable, Collidable { ... }</code></pre><p class="cap">Empty method bodies are the smell. They mean the interface is too big.</p></section>
+<section class="s-part"><p class="kicker">D</p><h2>Dependency Inversion</h2></section>
+<section class="s-big"><h2>Depend on abstractions, not on concretions.</h2><p class="sub">High-level policy must not depend on low-level detail.</p></section>
+<section class="s-code"><h3>Inverted</h3><pre><code class="language-java" data-trim data-noescape>// before: the game owns a terminal
+class Game {
+    private final LanternaGUI gui = new LanternaGUI();   // concrete, untestable
+}
+
+// after: the game is handed something that can draw
+class Game {
+    private final GUI gui;
+    Game(GUI gui) { this.gui = gui; }                    // injected
+}
+
+// production: new Game(new LanternaGUI());
+// test:       new Game(mock(GUI.class));</code></pre></section>
+<section class="s-big"><h2>Dependency injection is not a framework.</h2><p class="sub">It is a constructor parameter.</p></section>
+<section class="s-q"><h2>Which principle does &ldquo;the Model must not import Lanterna&rdquo; enforce?</h2></section>
+<section class="s-table"><h3>The five, in one table</h3><div class="tw"><table><thead><tr><th></th><th>Principle</th><th>The question it asks</th></tr></thead><tbody><tr><td>S</td><td>Single responsibility</td><td>Who asks for this class to change?</td></tr><tr><td>O</td><td>Open/closed</td><td>Can I add behaviour without editing?</td></tr><tr><td>L</td><td>Liskov substitution</td><td>Can I swap the subtype in blindly?</td></tr><tr><td>I</td><td>Interface segregation</td><td>Is any implementer writing empty methods?</td></tr><tr><td>D</td><td>Dependency inversion</td><td>Does policy depend on detail?</td></tr></tbody></table></div></section>
+<section class="s-big"><h2>SOLID is a set of heuristics, not laws.</h2><p class="sub">Applied without judgement, they produce a hundred one-method classes.</p></section>
+<section class="s-big"><h2>Test #1 is after this week.</h2><p class="sub">Weeks 1&ndash;6. Multiple choice, 60 minutes, individual. 15%.</p></section>
+<section class="s-lab"><p class="kicker">Next lab</p><h3>Lab 6</h3><ol><li>Take the supplied <code>Hero</code> implementation and find every SOLID violation</li><li>Fix them one principle at a time, keeping the suite green</li><li>Justify each change in one sentence &mdash; this is what the report asks for</li></ol></section>
+<section class="s-take"><p class="kicker">Take away</p><ul><li>One reason to change, per class</li><li>New behaviour = new class, not an edited <code>if</code></li><li><code>instanceof</code> in a caller is usually a broken abstraction</li><li>Inject dependencies &mdash; it is what makes the code testable at all</li></ul></section>
+</div></div>
+<div class="deck-chrome"><span>LDTS · L.EIC014 · FEUP</span><span id="deck-pos">Week 06</span></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/notes/notes.min.js"></script>
+<script>
+(function(){
+  // Progressive enhancement: use reveal.js when it loads, otherwise a tiny
+  // built-in presenter so the deck still works with no network in the room.
+  function boot(){
+    if (window.Reveal) {
+      Reveal.initialize({
+        hash:true, slideNumber:'c/t', controls:true, progress:true,
+        transition:'none', backgroundTransition:'none',
+        width:1280, height:800, margin:0.06,
+        minScale:0.2, maxScale:1.6,
+        plugins:[window.RevealHighlight, window.RevealNotes].filter(Boolean)
+      });
+      return;
+    }
+    var root=document.documentElement;
+    root.classList.add('no-reveal');
+    var slides=[].slice.call(document.querySelectorAll('.reveal .slides > section'));
+    if(!slides.length) return;
+    var bar=document.createElement('div');
+    bar.className='fb-bar'; bar.innerHTML='<i></i>';
+    document.body.appendChild(bar);
+    var fill=bar.firstChild, i=0;
+    function show(n){
+      i=Math.max(0,Math.min(slides.length-1,n));
+      slides.forEach(function(s,k){ s.classList.toggle('fb-on',k===i); });
+      fill.style.width=((i+1)/slides.length*100)+'%';
+      var c=document.getElementById('deck-pos');
+      if(c) c.textContent=(i+1)+' / '+slides.length;
+      try{ history.replaceState(null,'','#/'+i); }catch(e){}
+      window.scrollTo(0,0);
+    }
+    var m=/^#\/(\d+)/.exec(location.hash||'');
+    document.addEventListener('keydown',function(e){
+      if(e.metaKey||e.ctrlKey||e.altKey) return;
+      var k=e.key;
+      if(k==='ArrowRight'||k==='ArrowDown'||k===' '||k==='PageDown'){show(i+1);e.preventDefault();}
+      else if(k==='ArrowLeft'||k==='ArrowUp'||k==='PageUp'){show(i-1);e.preventDefault();}
+      else if(k==='Home'){show(0);e.preventDefault();}
+      else if(k==='End'){show(slides.length-1);e.preventDefault();}
+      else if(k==='n'||k==='s'){root.classList.toggle('fb-notes');}
+      else if(k==='a'){root.classList.toggle('fb-all');}
+      else if(k==='f'){ if(document.fullscreenElement) document.exitFullscreen();
+                        else document.documentElement.requestFullscreen(); }
+    });
+    document.addEventListener('click',function(e){
+      if(e.target.closest('a')) return;
+      show(i + (e.clientX > window.innerWidth*0.35 ? 1 : -1));
+    });
+    show(m?parseInt(m[1],10):0);
+  }
+  if(document.readyState==='loading')
+    window.addEventListener('DOMContentLoaded',function(){setTimeout(boot,60);});
+  else setTimeout(boot,60);
+})();
+</script>
+</body>
+</html>
