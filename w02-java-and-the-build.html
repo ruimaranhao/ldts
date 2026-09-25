@@ -218,7 +218,7 @@ public abstract class Element implements Drawable {
 <section class="s-list"><h3>What a build system does</h3><ul><li>Compiles sources in the right order</li><li>Fetches and pins dependencies</li><li>Runs the tests</li><li>Produces a runnable artefact</li><li>Does all of it identically, every time, for everyone</li></ul></section>
 <section class="s-big"><h2>Repetitive, with variations.</h2><p class="sub">That is the definition of something a human should stop doing by hand.</p></section>
 <section class="s-list tight"><h3>The Gradle lifecycle</h3><ul><li><code>compileJava</code> &rarr; <code>processResources</code> &rarr; <code>classes</code></li><li><code>compileTestJava</code> &rarr; <code>test</code></li><li><code>jar</code> &rarr; <code>assemble</code></li><li><code>check</code> &rarr; <code>build</code></li><li>Tasks declare dependencies; Gradle works out the order and skips what is up to date</li></ul></section>
-<section class="s-code"><h3>build.gradle.kts</h3><pre><code class="language-kotlin" data-trim data-noescape>plugins {
+<section class="s-code"><h3>build.gradle</h3><pre><code class="language-kotlin" data-trim data-noescape>plugins {
     java
     application
 }

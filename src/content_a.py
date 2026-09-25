@@ -396,7 +396,7 @@ try (Screen screen = terminalFactory.createScreen()) {
         "<code>check</code> &rarr; <code>build</code>",
         "Tasks declare dependencies; Gradle works out the order and skips what is up to date",
     ], tight=True),
-    code("build.gradle.kts", "kotlin", r"""
+    code("build.gradle", "kotlin", r"""
 plugins {
     java
     application
